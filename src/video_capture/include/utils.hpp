@@ -82,6 +82,9 @@ public:
                     }
                 }
             }
+            if (kw_flag == true)
+                bad_keyword(args.back(), "");
+                
             if (!is_framerate_viable()) {
                 std::string message = "Invalid framerate for resolution " + string_map.at("-r");
                 throw std::invalid_argument(message);
@@ -118,7 +121,7 @@ private:
         {
             return check_resolution(key, value);
         }
-        else if (key.compare("f") == 0)
+        else if (key.compare("-f") == 0)
         {
             return check_framerate(key, value);
         }

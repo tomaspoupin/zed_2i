@@ -12,6 +12,7 @@ int main(int argc, char* argv[])
     catch(const std::invalid_argument& e)
     {
         std::cerr << "Could not parse arguments: " << e.what() << std::endl;
+        return 1;
     }
 
     std::cout << "With GUI: " << parser.get_gui_option() << std::endl;
