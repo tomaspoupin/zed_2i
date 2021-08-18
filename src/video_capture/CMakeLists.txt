@@ -2,9 +2,10 @@ CMAKE_MINIMUM_REQUIRED(VERSION 2.4)
 PROJECT(video_capture)
 
 set(CMAKE_CXX_STANDARD 14)
+set(CMAKE_BUILD_TYPE Release)
 
 find_package(ZED 2 REQUIRED)
-find_package(OpenCV)
+find_package(OpenCV REQUIRED)
 find_package(CUDA ${ZED_CUDA_VERSION} EXACT REQUIRED)
 find_package(Boost COMPONENTS
     filesystem)

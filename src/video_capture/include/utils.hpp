@@ -5,6 +5,11 @@
 #include <vector>
 #include <stdexcept>
 #include <algorithm>
+#include <deque>
+#include <chrono>
+#include <memory>
+#include <opencv2/imgproc.hpp>
+#include <sl/Camera.hpp>
 
 using ArgBoolMap = std::map<std::string, bool>;
 using ValidRes = std::vector<std::string>;
@@ -170,5 +175,45 @@ private:
         throw std::invalid_argument(message);
     }
 };
+
+static sl::RESOLUTION get_resolution(const std::string& resolution)
+{
+    if (resolution.compare("2.2k") == 0)
+        return sl::RESOLUTION::HD2K;
+    else if (resolution.compare("1080p") == 0)
+        return sl::RESOLUTION::HD1080;
+    else if (resolution.compare("720p") == 0)
+        return sl::RESOLUTION::HD720;
+    else
+        return sl::RESOLUTION::VGA;
+}
+
+static std::unique_ptr<sl::Camera> get_camera(sl::RESOLUTION res, int fps)
+{
+    sl::InitParameters params;
+    params.camera_resolution = res;
+    params.camera_fps = fps;
+
+    auto zed_camera = std::make_unique<sl::Camera>();
+    auto err = zed_camera->open(params);
+
+    if (err != sl::ERROR_CODE::SUCCESS)
+    {
+        throw err;
+    }
+
+    return zed_camera;
+}
+
+void enable_recording(sl::Camera* camera)
+{
+    RecordingParameters recordingParameters;
+    recordingParameters.compression_mode = sl::SVO_COMPRESSION_MODE::H264;
+    recordingParameters.video_filename = "demo.svo";
+    auto err = camera->enableRecording(recordingParameters);
+    if (err != sl::ERROR_CODE::SUCCESS)
+        throw err;
+}
+
 
 #endif
