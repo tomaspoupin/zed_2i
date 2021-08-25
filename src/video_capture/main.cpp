@@ -2,6 +2,7 @@
 #include <tasks.hpp>
 #include <iostream>
 #include <iomanip>
+#include <arg_parser.hpp>
 
 void poll_exit();
 void show_fps(bool with_gui);
