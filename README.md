@@ -103,4 +103,18 @@ El SDK se puede instalar utilizando la documentación oficial para cada platafor
 
 # Primer uso de la cámara
 
-Si el SDK fue instalado con todas las herramientas, se tiene a disposición
+Si el SDK fue instalado con todas las herramientas, se tiene a disposición las siguientes herramientas dentro de `(ruta de instalación)/zed/tools/`:
+
+- **ZED_Explorer**: Permite corroborar si la cámara es detectada, y permite manejar los parámetros de la cámara, grabar videos, sacar fotos, observar los parámetros de calibración y actualizar el firmware.
+- **ZED_Depth_Viewer**: Permite observar los mapas de profundidad, mapas de confianza y nube de puntos generada por la cámara.
+- **ZED_Sensor_Viewer**: Permite observar las mediciones retornadas por los sensores de la cámara.
+- **ZED_Diagnostic**: Permite revisar si el computador tiene todos los requerimientos para usar la cámara sin problemas.
+- **ZED_Calibration**: Permite calibrar los parámetros intrínsecos de la cámara, no se recomienda puesto que las cámaras ya vienen rigurosamente calibradas.
+- **ZEDfu**: Aplicación de muestra el cual genera un mapeo tridimensional de los alrededores.
+- **ZED_SVO_Editor**: Aplicación para editar archivos de video SVO.
+
+# Módulos de prueba
+
+A continuación se muestrá los módulos de prueba del repositorio, los cuales están implementados dentro de la carpeta `src`.
+
+## Video capture
