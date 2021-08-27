@@ -4,44 +4,11 @@
 #include <sl/Camera.hpp>
 #include <opencv2/imgproc.hpp>
 #include <opencv2/highgui.hpp>
-#include <chrono>
-
-using Checkpoint = std::chrono::_V2::system_clock::time_point;
-
-static sl::RESOLUTION get_resolution(const std::string &resolution)
-{
-    if (resolution.compare("2.2k") == 0)
-        return sl::RESOLUTION::HD2K;
-    else if (resolution.compare("1080p") == 0)
-        return sl::RESOLUTION::HD1080;
-    else if (resolution.compare("720p") == 0)
-        return sl::RESOLUTION::HD720;
-    else
-        return sl::RESOLUTION::VGA;
-}
-
-static cv::Size resolution_to_cvsize(sl::RESOLUTION resolution)
-{
-    switch (resolution)
-    {
-    case sl::RESOLUTION::HD2K:
-        return cv::Size(2208, 1242);
-        break;
-    case sl::RESOLUTION::HD1080:
-        return cv::Size(1920, 1080);
-        break;
-    case sl::RESOLUTION::HD720:
-        return cv::Size(1280, 720);
-        break;
-    case sl::RESOLUTION::VGA:
-        return cv::Size(800, 480);
-        break;
-
-    default:
-        return cv::Size(1920, 1080);
-        break;
-    }
-}
+#include <boost/filesystem.hpp>
+#include <iomanip>
+#include <ctime>
+#include <sstream>
+#include <iostream>
 
 static std::unique_ptr<sl::Camera> get_camera(sl::RESOLUTION res, int fps)
 {
@@ -58,6 +25,26 @@ static std::unique_ptr<sl::Camera> get_camera(sl::RESOLUTION res, int fps)
     }
 
     return zed_camera;
+}
+
+static void enable_recording(sl::Camera *camera, const std::string& filename)
+{
+    sl::RecordingParameters recordingParameters;
+    recordingParameters.compression_mode = sl::SVO_COMPRESSION_MODE::H264;
+    recordingParameters.video_filename = sl::String(filename.c_str());
+    auto err = camera->enableRecording(recordingParameters);
+    if (err != sl::ERROR_CODE::SUCCESS)
+        throw err;
+}
+
+static std::string get_filename()
+{
+    auto t = std::time(nullptr);
+    auto tm = *std::localtime(&t);
+    std::stringstream buffer;
+    buffer << std::put_time(&tm, "%d-%m-%Y_%Hh-%Mm-%Ss");
+    std::string filename = "ZED2i_" + buffer.str() + ".svo";
+    return filename;
 }
 
 // Mapping between MAT_TYPE and CV_TYPE
@@ -103,27 +90,39 @@ static cv::Mat slMat2cvMat(sl::Mat &input)
     return cv::Mat(input.getHeight(), input.getWidth(), getOCVtype(input.getDataType()), input.getPtr<sl::uchar1>(sl::MEM::CPU), input.getStepBytes(sl::MEM::CPU));
 }
 
-static void enable_recording(sl::Camera *camera)
+static sl::RESOLUTION get_resolution(const std::string &resolution)
 {
-    sl::RecordingParameters recordingParameters;
-    recordingParameters.compression_mode = sl::SVO_COMPRESSION_MODE::H264;
-    recordingParameters.video_filename = "record.svo";
-    auto err = camera->enableRecording(recordingParameters);
-    if (err != sl::ERROR_CODE::SUCCESS)
-        throw err;
+    if (resolution.compare("2.2k") == 0)
+        return sl::RESOLUTION::HD2K;
+    else if (resolution.compare("1080p") == 0)
+        return sl::RESOLUTION::HD1080;
+    else if (resolution.compare("720p") == 0)
+        return sl::RESOLUTION::HD720;
+    else
+        return sl::RESOLUTION::VGA;
 }
 
-static std::unique_ptr<cv::VideoWriter> get_video_writer(int fps, cv::Size &resolution)
+static cv::Size resolution_to_cvsize(sl::RESOLUTION resolution)
 {
-    std::unique_ptr<cv::VideoWriter> writer = std::make_unique<cv::VideoWriter>();
-    int codec = cv::VideoWriter::fourcc('M', 'J', 'P', 'G');
-    std::string file_name = "./record.mkv";
-    writer->open(file_name, codec, fps, resolution);
+    switch (resolution)
+    {
+    case sl::RESOLUTION::HD2K:
+        return cv::Size(2208, 1242);
+        break;
+    case sl::RESOLUTION::HD1080:
+        return cv::Size(1920, 1080);
+        break;
+    case sl::RESOLUTION::HD720:
+        return cv::Size(1280, 720);
+        break;
+    case sl::RESOLUTION::VGA:
+        return cv::Size(800, 480);
+        break;
 
-    if (!writer->isOpened())
-        throw std::runtime_error("Could not open video writer");
-
-    return writer;
+    default:
+        return cv::Size(1920, 1080);
+        break;
+    }
 }
 
 #endif

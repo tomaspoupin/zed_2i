@@ -18,8 +18,6 @@ class ArgParser
 public:
     ArgParser()
     {
-        bool_map.insert(std::make_pair(std::string("-g"), false));
-        bool_map.insert(std::make_pair(std::string("-s"), false));
         string_map.insert(std::make_pair(std::string("-r"), std::string("1080p")));
         string_map.insert(std::make_pair(std::string("-f"), std::string("30")));
 
@@ -94,14 +92,6 @@ public:
         }
     }
 
-    bool get_gui_option()
-    {
-        return bool_map.at("-g");
-    }
-    bool get_fileformat_option()
-    {
-        return bool_map.at("-s");
-    }
     std::string get_fps_value()
     {
         return string_map.at("-f");
