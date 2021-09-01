@@ -94,7 +94,7 @@ void poll_exit()
         if (next_char == 'Q' || next_char == 'q')
             break;
 
-        std::this_thread::sleep_for(std::chrono::microseconds(20));
+        std::this_thread::sleep_for(std::chrono::milliseconds(200));
     }
 
     exit_app = true;
